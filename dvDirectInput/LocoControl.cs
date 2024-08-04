@@ -25,7 +25,7 @@ namespace dvDirectInput
 				foreach (var configControl in Main.settings.configControls.Select((val, idx) => new { idx, val }))
 				{
 					// We should probably do a lookup for the inputs against the mappings instead of iterating
-					if (configControl.val.Enabled && input.JoystickObj.Properties.JoystickId == configControl.val.DeviceId && input.Offset == configControl.val.DeviceOffset)
+					if (configControl.val.Enabled && input.Index == configControl.val.DeviceId && input.Offset == configControl.val.DeviceOffset)
 					{
 						var control = new ControlReference();
 						if (!PlayerManager.Car?.interior.GetComponentInChildren<InteriorControlsManager>().TryGetControl((ControlType)configControl.idx, out control) ?? true) return;

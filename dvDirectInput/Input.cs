@@ -17,6 +17,7 @@ namespace dvDirectInput
 		{
 			public Joystick JoystickObj { get; set; }
 			public JoystickOffset Offset { get; set; }
+			public int Index { get; set; }
 			public int Value { get; set; }
 			public int Timestamp { get; set; }
 
@@ -39,7 +40,7 @@ namespace dvDirectInput
 
 			public override string ToString()
 			{
-				return string.Format(CultureInfo.InvariantCulture, $"ID: {JoystickObj.Properties}, Offset: {Offset}, Value: {Value}, Normalised Value {NormalisedValue()}, Timestamp {Timestamp}");
+				return string.Format(CultureInfo.InvariantCulture, $"ID: {Index}, Offset: {Offset}, Value: {Value}, Normalised Value {NormalisedValue()}, Timestamp {Timestamp}");
 			}
 		}
 
@@ -80,7 +81,7 @@ namespace dvDirectInput
 				foreach (var data in joystick.val.GetBufferedData())
 				{
 					// Chuck all the inputs on a queue
-					var input = new InputItem() { JoystickObj = joystick.val, Offset = data.Offset, Value = data.Value, Timestamp = data.Timestamp };
+					var input = new InputItem() { JoystickObj = joystick.val, Index = joystick.idx, Offset = data.Offset, Value = data.Value, Timestamp = data.Timestamp };
 					inputQueue.Enqueue(input);
 
 					// GUI Logic - Copy of inputs
@@ -122,8 +123,15 @@ namespace dvDirectInput
 			foreach (var prop in joystick.GetType().GetProperties())
 			{
 				Main.mod.Logger.Log($"Joystick Properties for {prop.Name}");
-				if (joystick.GetType().GetProperty(prop.Name).GetValue(joystick) == null)
+
+				try {
+				    if (prop.GetValue(joystick) == null) {
+						continue;
+					}
+				} catch (Exception e) {
+					Main.mod.Logger.Log($"Couldn't get value for {prop.Name}: {e.Message}");
 					continue;
+				}
 				if (prop.GetValue(joystick).GetType().GetProperties().Length > 0)
 				{
 					foreach (var subprop in prop.GetValue(joystick).GetType().GetProperties())
@@ -138,24 +146,6 @@ namespace dvDirectInput
 							val = e.Message;
 						}
 						Main.mod.Logger.Log($"{prop.Name}, {subprop.Name}, {val}");
-					}
-				}
-				Main.mod.Logger.Log($"");
-				Main.mod.Logger.Log($"Joystick Fields for {prop.Name}");
-				if (joystick.GetType().GetProperty(prop.Name).GetValue(joystick).GetType().GetProperties().Length > 0)
-				{
-					foreach (var field in joystick.GetType().GetProperty(prop.Name).GetValue(joystick).GetType().GetFields())
-					{
-						string val = "";
-						try
-						{
-							val = field.GetValue(prop.GetValue(joystick)).ToString();
-						}
-						catch (Exception e)
-						{
-							val = e.Message;
-						}
-						Main.mod.Logger.Log($"{prop.Name}, {field.Name}, {val}");
 					}
 				}
 				Main.mod.Logger.Log($"");
@@ -208,7 +198,7 @@ namespace dvDirectInput
 				style.normal.textColor = Color.gray;
 				style.normal.background = Texture2D.whiteTexture;
 				GUILayout.Label("Joystick ID:", style);
-				GUILayout.Label($"[{joystick.val.Properties.JoystickId}] ", style);
+				GUILayout.Label($"[{joystick.idx}] ", style);
 
 				style.normal.textColor = Color.white;
 				style.normal.background = Texture2D.grayTexture;
