@@ -124,9 +124,9 @@ namespace dvDirectInput
 				Main.mod.Logger.Log($"Joystick Properties for {prop.Name}");
 				if (joystick.GetType().GetProperty(prop.Name).GetValue(joystick) == null)
 					continue;
-				if (joystick.GetType().GetProperty(prop.Name).GetValue(joystick).GetType().GetProperties().Length > 0)
+				if (prop.GetValue(joystick).GetType().GetProperties().Length > 0)
 				{
-					foreach (var subprop in joystick.GetType().GetProperty(prop.Name).GetValue(joystick).GetType().GetProperties())
+					foreach (var subprop in prop.GetValue(joystick).GetType().GetProperties())
 					{
 						string val = "";
 						try
@@ -165,10 +165,11 @@ namespace dvDirectInput
 			Main.mod.Logger.Log($"Joystick Objects");
 			foreach (var obj in joystick.GetObjects())
 			{
-				Main.mod.Logger.Log($"Joystick Object Fields");
+				Main.mod.Logger.Log($"Joystick Object Fields: {obj.Name}");
 				foreach (var field in obj.GetType().GetFields())
 				{
-					Main.mod.Logger.Log($"ID: {joystick.Properties.JoystickId}, Device: {joystick.Properties.ProductName}, {field.Name}: {field.GetValue(obj)}");
+					Main.mod.Logger.Log($"Joystick Object Fields: {obj.Name}: {field.Name}");
+					Main.mod.Logger.Log($"ID: {device.InstanceGuid}, Device: {joystick.Properties.ProductName}, {field.Name}: {field.GetValue(obj)}");
 				}
 
 				Main.mod.Logger.Log($"Joystick Object Properties");
