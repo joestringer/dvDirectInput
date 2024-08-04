@@ -19,6 +19,8 @@ namespace dvDirectInput
 			public int DeviceId = 0;
 			public JoystickOffset DeviceOffset = JoystickOffset.X;
 			public bool InvertControl = false;
+			public int RangeMin = 0;
+			public int RangeMax = 65535;
 		}
 		public override void Save(UnityModManager.ModEntry modEntry)
 		{
@@ -62,8 +64,14 @@ namespace dvDirectInput
 				GUILayout.Label("Device Offset", GUILayout.Width(100));
 				configControl.val.DeviceOffset = (JoystickOffset)int.Parse(GUILayout.TextField(((int)configControl.val.DeviceOffset).ToString()));
 				GUILayout.EndHorizontal();
+				GUILayout.BeginHorizontal(GUILayout.Width(200));
 				configControl.val.InvertControl = GUILayout.Toggle(configControl.val.InvertControl, "Invert");
-
+				GUILayout.EndHorizontal();
+				GUILayout.BeginHorizontal(GUILayout.Width(200));
+				GUILayout.Label("Axis Range (min, max)", GUILayout.Width(100));
+				configControl.val.RangeMin = Main.Bound(0, int.Parse(GUILayout.TextField(configControl.val.RangeMin.ToString())), 65535);
+				configControl.val.RangeMax = Main.Bound(0, int.Parse(GUILayout.TextField(configControl.val.RangeMax.ToString())), 65535);
+				GUILayout.EndHorizontal();
 				GUILayout.EndVertical();
 			}
 			GUILayout.EndVertical();

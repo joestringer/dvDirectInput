@@ -99,7 +99,9 @@ namespace dvDirectInput
 				return e.Message;
 			}
 		}
-
+		public static int Bound(int min, int val, int max) {
+			return val < min ? min : val > max ? max : val;
+		}
 	}
 
 }

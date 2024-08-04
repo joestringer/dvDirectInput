@@ -29,8 +29,11 @@ namespace dvDirectInput
 					{
 						var control = new ControlReference();
 						if (!PlayerManager.Car?.interior.GetComponentInChildren<InteriorControlsManager>().TryGetControl((ControlType)configControl.idx, out control) ?? true) return;
-						control.controlImplBase?.SetValue(configControl.val.InvertControl ? 1.0f - input.NormalisedValue() : input.NormalisedValue());
-						break;
+						var val = input.NormalisedValue(configControl.val.RangeMin, configControl.val.RangeMax);
+						if (configControl.val.InvertControl) {
+							val = 1.0f - val;
+						}
+						control.controlImplBase?.SetValue(val);
 					}
 				}
 			}

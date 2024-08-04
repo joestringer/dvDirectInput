@@ -25,12 +25,15 @@ namespace dvDirectInput
 			// Axes 0 - 65535
 			// Button 0, 128
 			// POV -1 (released), 0 (up), 4500, 9000(right), 13500, 18000(down), 22500, 27000(left), 31500
-			public float NormalisedValue()
+			//
+			// 'min' and 'max' support mapping the value into a user-supplied virtual axis to share a physical access across multiple controls.
+			public float NormalisedValue(int min, int max)
 			{
 				var inputFlags = JoystickObj.GetObjectInfoByOffset((int)Offset).ObjectId.Flags;
 
-				if ((inputFlags & DeviceObjectTypeFlags.Axis) != 0)
-					return (float)Value / 65535;
+				if ((inputFlags & DeviceObjectTypeFlags.Axis) != 0) {
+					return (float)(Main.Bound(min, Value, max)-min) / (max-min);
+				}
 
 				if ((inputFlags & DeviceObjectTypeFlags.Button) != 0)
 					return (float)Value / 128;
@@ -40,7 +43,7 @@ namespace dvDirectInput
 
 			public override string ToString()
 			{
-				return string.Format(CultureInfo.InvariantCulture, $"ID: {Index}, Offset: {Offset}, Value: {Value}, Normalised Value {NormalisedValue()}, Timestamp {Timestamp}");
+				return string.Format(CultureInfo.InvariantCulture, $"ID: {Index}, Offset: {Offset}, Value: {Value}, Normalised Value {NormalisedValue(0, 65535)}, Timestamp {Timestamp}");
 			}
 		}
 
